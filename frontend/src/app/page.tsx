@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useEffect, useState, useRef } from "react";
-import { FiCpu, FiCode, FiBookOpen, FiAward, FiMessageSquare, FiArrowRight, FiTwitter, FiGithub, FiLinkedin, FiInstagram, FiMail, FiMapPin, FiClock } from 'react-icons/fi';
+import { FiCpu, FiCode, FiBookOpen, FiAward, FiMessageSquare, FiArrowRight, FiTwitter, FiGithub, FiLinkedin, FiInstagram, FiMail, FiMapPin } from 'react-icons/fi';
 
 export default function Home() {
   const [isHovering, setIsHovering] = useState<string | null>(null);
