@@ -2,48 +2,61 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { FiArrowRight, FiUsers, FiAward, FiBookOpen, FiCode, FiCpu, FiGithub, FiInstagram, FiLinkedin, FiTwitter } from 'react-icons/fi';
+import { FiArrowRight, FiUsers, FiAward, FiBookOpen, FiCode, FiCpu, FiGithub, FiInstagram, FiLinkedin, FiTwitter, FiMessageSquare } from 'react-icons/fi';
 import { useState } from "react";
 
 const About = () => {
   const [isHovering, setIsHovering] = useState<string | null>(null);
   
-  const sections = [
-    { 
-      title: "Workshops", 
-      href: "/workshops", 
-      icon: <FiCpu size={28} />,
-      description: "Hands-on sessions to boost your skills",
-      color: "from-purple-500 to-pink-500"
-    },
-    { 
-      title: "Resources", 
-      href: "/resources", 
-      icon: <FiCode size={28} />,
-      description: "Curated tools and references",
-      color: "from-blue-500 to-teal-500"
-    },
-    { 
-      title: "Study Materials", 
-      href: "/materials", 
-      icon: <FiBookOpen size={28} />,
-      description: "Learning resources for all levels",
-      color: "from-green-500 to-emerald-500"
-    },
-    { 
-      title: "Projects", 
-      href: "/projects", 
-      icon: <FiAward size={28} />,
-      description: "Innovative creations from our community",
-      color: "from-yellow-500 to-orange-500"
-    }
-  ];
-
+    const sections = [
+      { 
+        title: "Workshops", 
+        href: "/workshops", 
+        icon: <FiCpu size={28} />,
+        description: "Hands-on sessions to boost your skills",
+        color: "from-purple-500 to-pink-500"
+      },
+      { 
+        title: "Resources", 
+        href: "/resources", 
+        icon: <FiCode size={28} />,
+        description: "Curated tools and references",
+        color: "from-blue-500 to-teal-500"
+      },
+      { 
+        title: "Study Materials", 
+        href: "/materials", 
+        icon: <FiBookOpen size={28} />,
+        description: "Learning resources for all levels",
+        color: "from-green-500 to-emerald-500"
+      },
+      { 
+        title: "About Us", 
+        href: "/about-us", 
+        icon: <FiBookOpen size={28} />,
+        description: "Get to know us",
+        color: "from-green-500 to-emerald-500"
+      },
+      { 
+        title: "Projects", 
+        href: "/projects", 
+        icon: <FiAward size={28} />,
+        description: "Innovative creations from our community",
+        color: "from-yellow-500 to-orange-500"
+      },
+      { 
+        title: "Competitions", 
+        href: "/competitions", 
+        icon: <FiMessageSquare size={28} />,
+        description: "Upcoming challenges and events",
+        color: "from-red-500 to-pink-500"
+      },
+    ];
   const faculty = [
     {
-      name: "Yogesh Pandit",
+      name: " Mr. Yogesh Pandit",
       role: "Faculty In-Charge",
-      department: "Electronics & Computer Science Engineering",
+      department: "Electronics & Computer Science  ",
       image: "/team/yp.jpg"
     },
 
@@ -52,10 +65,10 @@ const About = () => {
 
 
   const labImages = [
-    "/lab/lab1.jpg",
-    "/lab/lab2.jpg",
-    "/lab/lab3.jpg",
-    "/lab/lab4.jpg"
+    "/images/lab1.jpg",
+    "/images/lab2.jpg",
+    "/images/lab3.jpg",
+    "/images/lab4.jpg"
   ];
 
   return (
@@ -80,7 +93,7 @@ const About = () => {
             <Link href="/">
               <span className="text-gray-300 hover:text-[#00F5D4] transition-colors">Home</span>
             </Link>
-            {sections.slice(0, 3).map((section) => (
+            {sections.slice(0, 4).map((section) => (
               <Link key={section.title} href={section.href}>
                 <motion.div className="text-gray-300 hover:text-[#00F5D4] transition-colors relative" onHoverStart={() => setIsHovering(section.title)} onHoverEnd={() => setIsHovering(null)} whileHover={{ scale: 1.1 }}>
                   {section.title}
@@ -332,7 +345,7 @@ const About = () => {
     >
       <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-[#9F70FD]/50 mx-auto mb-4">
         <Image
-          src="/images/team/srushti.jpg"
+          src="/team/srushti.jpg"
           alt="Srushti Pawar"
           width={128}
           height={128}
@@ -367,98 +380,14 @@ const About = () => {
       </div>
     </motion.div>
 
-    {/* Finance Head */}
+        {/* Technical Head - Anushka Shinde */}
     <motion.div 
       className="bg-[#1A1A1A]/50 backdrop-blur-lg rounded-2xl border border-[#9F70FD]/30 p-6 text-center"
       whileHover={{ y: -5, boxShadow: '0 0 20px rgba(159, 112, 253, 0.2)' }}
     >
       <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-[#9F70FD]/50 mx-auto mb-4">
         <Image
-          src="/images/team/sneha.jpg"
-          alt="Sneha Patil"
-          width={128}
-          height={128}
-          className="object-cover w-full h-full"
-        />
-      </div>
-      <h4 className="text-xl font-bold font-mono text-white mb-1">Sneha Patil</h4>
-      <p className="text-gray-400 mb-2">Final Year | ECS</p>
-      <div className="px-4 py-1 bg-[#9F70FD]/20 text-[#00F5D4] rounded-full text-sm font-mono inline-block">
-        Finance Head
-      </div>
-    </motion.div>
-
-    {/* Creative Head */}
-    <motion.div 
-      className="bg-[#1A1A1A]/50 backdrop-blur-lg rounded-2xl border border-[#9F70FD]/30 p-6 text-center"
-      whileHover={{ y: -5, boxShadow: '0 0 20px rgba(159, 112, 253, 0.2)' }}
-    >
-      <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-[#9F70FD]/50 mx-auto mb-4">
-        <Image
-          src="/images/team/purvi.jpg"
-          alt="Purvi Prasad"
-          width={128}
-          height={128}
-          className="object-cover w-full h-full"
-        />
-      </div>
-      <h4 className="text-xl font-bold font-mono text-white mb-1">Purvi Prasad</h4>
-      <p className="text-gray-400 mb-2">Final Year | ECS</p>
-      <div className="px-4 py-1 bg-[#9F70FD]/20 text-[#00F5D4] rounded-full text-sm font-mono inline-block">
-        Creative Head
-      </div>
-    </motion.div>
-
-    {/* Operations Head - Riddhi Buva */}
-    <motion.div 
-      className="bg-[#1A1A1A]/50 backdrop-blur-lg rounded-2xl border border-[#9F70FD]/30 p-6 text-center"
-      whileHover={{ y: -5, boxShadow: '0 0 20px rgba(159, 112, 253, 0.2)' }}
-    >
-      <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-[#9F70FD]/50 mx-auto mb-4">
-        <Image
-          src="/images/team/riddhi.jpg"
-          alt="Riddhi Buva"
-          width={128}
-          height={128}
-          className="object-cover w-full h-full"
-        />
-      </div>
-      <h4 className="text-xl font-bold font-mono text-white mb-1">Riddhi Buva</h4>
-      <p className="text-gray-400 mb-2">Final Year | ECS</p>
-      <div className="px-4 py-1 bg-[#9F70FD]/20 text-[#00F5D4] rounded-full text-sm font-mono inline-block">
-        Operations Head
-      </div>
-    </motion.div>
-
-    {/* Operations Head - Ritika Zare */}
-    <motion.div 
-      className="bg-[#1A1A1A]/50 backdrop-blur-lg rounded-2xl border border-[#9F70FD]/30 p-6 text-center"
-      whileHover={{ y: -5, boxShadow: '0 0 20px rgba(159, 112, 253, 0.2)' }}
-    >
-      <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-[#9F70FD]/50 mx-auto mb-4">
-        <Image
-          src="/images/team/ritika.jpg"
-          alt="Ritika Zare"
-          width={128}
-          height={128}
-          className="object-cover w-full h-full"
-        />
-      </div>
-      <h4 className="text-xl font-bold font-mono text-white mb-1">Ritika Zare</h4>
-      <p className="text-gray-400 mb-2">Final Year | ECS</p>
-      <div className="px-4 py-1 bg-[#9F70FD]/20 text-[#00F5D4] rounded-full text-sm font-mono inline-block">
-        Operations Head
-      </div>
-    </motion.div>
-
-    {/* Technical Head - Anushka Shinde */}
-    <motion.div 
-      className="bg-[#1A1A1A]/50 backdrop-blur-lg rounded-2xl border border-[#9F70FD]/30 p-6 text-center"
-      whileHover={{ y: -5, boxShadow: '0 0 20px rgba(159, 112, 253, 0.2)' }}
-    >
-      <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-[#9F70FD]/50 mx-auto mb-4">
-        <Image
-          src="/images/team/anushka.jpg"
+          src="/team/anushka.jpg"
           alt="Anushka Shinde"
           width={128}
           height={128}
@@ -479,7 +408,7 @@ const About = () => {
     >
       <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-[#9F70FD]/50 mx-auto mb-4">
         <Image
-          src="/images/team/prajwal.jpg"
+          src="/team/prajwal.jpg"
           alt="Prajwal Kudapane"
           width={128}
           height={128}
@@ -493,6 +422,90 @@ const About = () => {
       </div>
     </motion.div>
 
+    {/* Operations Head - Riddhi Buva */}
+    <motion.div 
+      className="bg-[#1A1A1A]/50 backdrop-blur-lg rounded-2xl border border-[#9F70FD]/30 p-6 text-center"
+      whileHover={{ y: -5, boxShadow: '0 0 20px rgba(159, 112, 253, 0.2)' }}
+    >
+      <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-[#9F70FD]/50 mx-auto mb-4">
+        <Image
+          src="/team/riddhi.jpg"
+          alt="Riddhi Buva"
+          width={128}
+          height={128}
+          className="object-cover w-full h-full"
+        />
+      </div>
+      <h4 className="text-xl font-bold font-mono text-white mb-1">Riddhi Buva</h4>
+      <p className="text-gray-400 mb-2">Final Year | ECS</p>
+      <div className="px-4 py-1 bg-[#9F70FD]/20 text-[#00F5D4] rounded-full text-sm font-mono inline-block">
+        Operations Head
+      </div>
+    </motion.div>
+
+    {/* Operations Head - Ritika Zare */}
+    <motion.div 
+      className="bg-[#1A1A1A]/50 backdrop-blur-lg rounded-2xl border border-[#9F70FD]/30 p-6 text-center"
+      whileHover={{ y: -5, boxShadow: '0 0 20px rgba(159, 112, 253, 0.2)' }}
+    >
+      <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-[#9F70FD]/50 mx-auto mb-4">
+        <Image
+          src="/team/ritika.jpg"
+          alt="Ritika Zare"
+          width={128}
+          height={128}
+          className="object-cover w-full h-full"
+        />
+      </div>
+      <h4 className="text-xl font-bold font-mono text-white mb-1">Ritika Zare</h4>
+      <p className="text-gray-400 mb-2">Final Year | ECS</p>
+      <div className="px-4 py-1 bg-[#9F70FD]/20 text-[#00F5D4] rounded-full text-sm font-mono inline-block">
+        Operations Head
+      </div>
+    </motion.div>
+
+    {/* Creative Head */}
+    <motion.div 
+      className="bg-[#1A1A1A]/50 backdrop-blur-lg rounded-2xl border border-[#9F70FD]/30 p-6 text-center"
+      whileHover={{ y: -5, boxShadow: '0 0 20px rgba(159, 112, 253, 0.2)' }}
+    >
+      <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-[#9F70FD]/50 mx-auto mb-4">
+        <Image
+          src="/team/purvi.jpg"
+          alt="Purvi Prasad"
+          width={128}
+          height={128}
+          className="object-cover w-full h-full"
+        />
+      </div>
+      <h4 className="text-xl font-bold font-mono text-white mb-1">Purvi Prasad</h4>
+      <p className="text-gray-400 mb-2">Final Year | ECS</p>
+      <div className="px-4 py-1 bg-[#9F70FD]/20 text-[#00F5D4] rounded-full text-sm font-mono inline-block">
+        Creative Head
+      </div>
+    </motion.div>
+     
+    {/* Finance Head */}
+    <motion.div 
+      className="bg-[#1A1A1A]/50 backdrop-blur-lg rounded-2xl border border-[#9F70FD]/30 p-6 text-center"
+      whileHover={{ y: -5, boxShadow: '0 0 20px rgba(159, 112, 253, 0.2)' }}
+    >
+      <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-[#9F70FD]/50 mx-auto mb-4">
+        <Image
+          src="/team/sneha.jpg"
+          alt="Sneha Patil"
+          width={128}
+          height={128}
+          className="object-cover w-full h-full"
+        />
+      </div>
+      <h4 className="text-xl font-bold font-mono text-white mb-1">Sneha Patil</h4>
+      <p className="text-gray-400 mb-2">Final Year | ECS</p>
+      <div className="px-4 py-1 bg-[#9F70FD]/20 text-[#00F5D4] rounded-full text-sm font-mono inline-block">
+        Finance Head
+      </div>
+    </motion.div>
+
     {/* Public Relations Head */}
     <motion.div 
       className="bg-[#1A1A1A]/50 backdrop-blur-lg rounded-2xl border border-[#9F70FD]/30 p-6 text-center"
@@ -500,7 +513,7 @@ const About = () => {
     >
       <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-[#9F70FD]/50 mx-auto mb-4">
         <Image
-          src="/images/team/kalpesh.jpg"
+          src="/team/kalpesh.jpg"
           alt="Kalpesh Rathod"
           width={128}
           height={128}

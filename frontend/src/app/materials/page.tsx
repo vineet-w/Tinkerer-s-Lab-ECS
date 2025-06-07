@@ -8,185 +8,57 @@ import { FiCpu, FiCode, FiBookOpen, FiAward, FiMessageSquare, FiDownload, FiExte
 const Materials = () => {
   const [isHovering, setIsHovering] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [isVerified, setIsVerified] = useState(false);
-  const [showVerification, setShowVerification] = useState(true);
-  const [idInput, setIdInput] = useState("");
-  const [verificationError, setVerificationError] = useState("");
 
-  // Check localStorage for existing verification
-  useEffect(() => {
-    const verified = localStorage.getItem('ecs-verified');
-    if (verified === 'true') {
-      setIsVerified(true);
-      setShowVerification(false);
-    }
-  }, []);
 
-  // Department verification function
-  const verifyDepartment = (id: string) => {
-    if (!id.trim()) {
-      setVerificationError("Please enter your college ID");
-      return false;
-    }
-    
-    // Example: VESIT ECS IDs typically start with 'ECS' followed by numbers
-    const ecsRegex = /^ECS\d{5}$/i;
-    if (ecsRegex.test(id.trim())) {
-      localStorage.setItem('ecs-verified', 'true');
-      return true;
-    }
-    setVerificationError("Invalid ECS ID format. Example: ECS22045");
-    return false;
-  };
 
-  const handleVerification = () => {
-    if (verifyDepartment(idInput)) {
-      setIsVerified(true);
-      setShowVerification(false);
-    }
-  };
 
-  // Verification Modal
-  if (!isVerified && showVerification) {
-    return (
-      <div className="fixed inset-0 bg-[#0D0D0D]/90 backdrop-blur-lg z-50 flex items-center justify-center p-4">
-        <motion.div 
-          className="bg-[#1A1A1A] border border-[#9F70FD]/50 rounded-xl p-8 max-w-md w-full"
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ type: "spring", stiffness: 300 }}
-        >
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold font-mono text-white">ECS Verification</h2>
-            <button 
-              onClick={() => window.location.href = '/'}
-              className="text-gray-400 hover:text-white"
-            >
-              <FiX size={24} />
-            </button>
-          </div>
-          
-          <div className="flex items-center gap-4 mb-6">
-            <div className="p-3 bg-[#9F70FD]/10 rounded-lg">
-              <FiTool className="text-[#9F70FD] text-xl" />
-            </div>
-            <p className="text-gray-300 text-sm">
-              This content is exclusively for <span className="text-[#00F5D4] font-bold">Electronics & Computer Science</span> students of VESIT.
-            </p>
-          </div>
-          
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="collegeId" className="block text-sm font-medium text-gray-400 mb-2">
-                Enter Your College ID
-              </label>
-              <input
-                type="text"
-                id="collegeId"
-                value={idInput}
-                onChange={(e) => {
-                  setIdInput(e.target.value);
-                  setVerificationError("");
-                }}
-                placeholder="ECS22045"
-                className="w-full bg-[#0D0D0D] border border-[#9F70FD]/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[#9F70FD]/50 font-mono"
-                onKeyDown={(e) => e.key === 'Enter' && handleVerification()}
-              />
-              <p className="mt-1 text-xs text-gray-500">Format: ECS followed by 5 digits (e.g. ECS22045)</p>
-              {verificationError && (
-                <p className="mt-2 text-sm text-red-400">{verificationError}</p>
-              )}
-            </div>
-            
-            <div className="flex gap-4 pt-2">
-              <motion.button
-                onClick={handleVerification}
-                className="flex-1 bg-gradient-to-r from-[#9F70FD] to-[#7a4be6] text-white py-3 rounded-lg font-bold flex items-center justify-center gap-2"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <FiTool /> Verify ID
-              </motion.button>
-            </div>
-          </div>
-        </motion.div>
-      </div>
-    );
-  }
 
-  // Access Denied View
-  if (!isVerified && !showVerification) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0D0D0D] p-4">
-        <motion.div 
-          className="bg-[#1A1A1A] border border-red-500/30 rounded-xl p-8 max-w-md w-full text-center"
-          initial={{ scale: 0.95 }}
-          animate={{ scale: 1 }}
-        >
-          <div className="mx-auto w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mb-4">
-            <FiX className="text-red-500 text-2xl" />
-          </div>
-          <h2 className="text-2xl font-bold text-white mb-2">Access Restricted</h2>
-          <p className="text-gray-400 mb-6">
-            You must be an <span className="text-[#00F5D4]">ECS student</span> to access these materials.
-          </p>
-          
-          <div className="flex flex-col gap-3">
-            <motion.button
-              onClick={() => setShowVerification(true)}
-              className="bg-gradient-to-r from-[#9F70FD] to-[#7a4be6] text-white px-6 py-3 rounded-lg font-bold"
-              whileHover={{ scale: 1.02 }}
-            >
-              Try Verification Again
-            </motion.button>
-            
-            <Link href="/">
-              <motion.button
-                className="w-full bg-[#0D0D0D] border border-[#9F70FD]/30 text-[#9F70FD] px-6 py-3 rounded-lg font-bold"
-                whileHover={{ scale: 1.02 }}
-              >
-                Return to Home
-              </motion.button>
-            </Link>
-          </div>
-        </motion.div>
-      </div>
-    );
-  }
 
   // Original Materials Page Content (only shown when verified)
-  const sections = [
-    { 
-      title: "Workshops", 
-      href: "/workshops", 
-      icon: <FiCpu size={28} />,
-      description: "Hands-on sessions to boost your skills"
-    },
-    { 
-      title: "Resources", 
-      href: "/resources", 
-      icon: <FiCode size={28} />,
-      description: "Curated tools and references"
-    },
-    { 
-      title: "Study Materials", 
-      href: "/materials", 
-      icon: <FiBookOpen size={28} />,
-      description: "Learning resources for all levels"
-    },
-    { 
-      title: "Projects", 
-      href: "/projects", 
-      icon: <FiAward size={28} />,
-      description: "Innovative creations from our community"
-    },
-    { 
-      title: "Competitions", 
-      href: "/competitions", 
-      icon: <FiMessageSquare size={28} />,
-      description: "Upcoming challenges and events"
-    },
-  ];
+    const sections = [
+      { 
+        title: "Workshops", 
+        href: "/workshops", 
+        icon: <FiCpu size={28} />,
+        description: "Hands-on sessions to boost your skills",
+        color: "from-purple-500 to-pink-500"
+      },
+      { 
+        title: "Resources", 
+        href: "/resources", 
+        icon: <FiCode size={28} />,
+        description: "Curated tools and references",
+        color: "from-blue-500 to-teal-500"
+      },
+      { 
+        title: "Study Materials", 
+        href: "/materials", 
+        icon: <FiBookOpen size={28} />,
+        description: "Learning resources for all levels",
+        color: "from-green-500 to-emerald-500"
+      },
+      { 
+        title: "About Us", 
+        href: "/about-us", 
+        icon: <FiBookOpen size={28} />,
+        description: "Get to know us",
+        color: "from-green-500 to-emerald-500"
+      },
+      { 
+        title: "Projects", 
+        href: "/projects", 
+        icon: <FiAward size={28} />,
+        description: "Innovative creations from our community",
+        color: "from-yellow-500 to-orange-500"
+      },
+      { 
+        title: "Competitions", 
+        href: "/competitions", 
+        icon: <FiMessageSquare size={28} />,
+        description: "Upcoming challenges and events",
+        color: "from-red-500 to-pink-500"
+      },
+    ];
 
   const studyCategories = [
     {
@@ -355,7 +227,7 @@ const Materials = () => {
             <Link href="/">
               <span className="text-gray-300 hover:text-[#00F5D4] transition-colors">Home</span>
             </Link>
-            {sections.slice(0, 3).map((section) => (
+            {sections.slice(0, 4).map((section) => (
               <Link key={section.title} href={section.href}>
                 <motion.div className="text-gray-300 hover:text-[#00F5D4] transition-colors relative" onHoverStart={() => setIsHovering(section.title)} onHoverEnd={() => setIsHovering(null)} whileHover={{ scale: 1.1 }}>
                   {section.title}

@@ -31,6 +31,13 @@ const Workshops = () => {
         color: "from-green-500 to-emerald-500"
       },
       { 
+        title: "About Us", 
+        href: "/about-us", 
+        icon: <FiBookOpen size={28} />,
+        description: "Get to know us",
+        color: "from-green-500 to-emerald-500"
+      },
+      { 
         title: "Projects", 
         href: "/projects", 
         icon: <FiAward size={28} />,
@@ -49,14 +56,13 @@ const Workshops = () => {
   const workshops = [
     {
       id: 1,
-      title: "Introduction to Arduino",
-      description: "Learn the fundamentals of Arduino programming and circuit design through hands-on projects.",
-      date: "2023-12-15",
+      title: "Praxis ‘24: Robotics Event",
+      description: "Praxis’ 24 showcased cutting-edge robotics through four dynamic challenges, from Robo Soccer to autonomous maze-solving. The event celebrated innovation, with Tinkerer’s Lab ECS honoring top performers for their skill and creativity.",
+      date: "2024-03-06 ",
       time: "2:00 PM - 5:00 PM",
-      location: "Lab 201, 2nd Floor",
-      capacity: 20,
-      instructor: "Prof. Rajesh Kumar",
-      image: "/images/workshops/arduino.jpg",
+      location: "Amphitheater, 2nd Floor",
+ 
+      image: "/workshops/praxis.jpg",
       tags: ["Electronics", "Beginner"]
     },
     {
@@ -147,13 +153,15 @@ const Workshops = () => {
             <Link href="/">
               <span className="text-gray-300 hover:text-[#00F5D4] transition-colors">Home</span>
             </Link>
-            {sections.slice(0, 3).map((section) => (
+            {sections.slice(0, 4).map((section) => (
               <Link key={section.title} href={section.href}>
                 <motion.div className="text-gray-300 hover:text-[#00F5D4] transition-colors relative" onHoverStart={() => setIsHovering(section.title)} onHoverEnd={() => setIsHovering(null)} whileHover={{ scale: 1.1 }}>
                   {section.title}
                   <motion.div className="absolute -bottom-1 left-0 w-full h-0.5 bg-[#00F5D4]" initial={{ scaleX: 0 }} animate={{ scaleX: isHovering === section.title ? 1 : 0 }} style={{ transformOrigin: 'left' }} transition={{ duration: 0.3 }} />
                 </motion.div>
               </Link>
+
+              
             ))}
           </nav>
         </div>
@@ -437,10 +445,7 @@ const WorkshopCard = ({ workshop, isPast }: { workshop: any, isPast: boolean }) 
             <FiMapPin className={`mr-3 ${isPast ? 'text-[#9F70FD]' : 'text-[#00F5D4]'}`} />
             <span>{workshop.location}</span>
           </div>
-          <div className="flex items-center text-gray-300">
-            <FiUsers className={`mr-3 ${isPast ? 'text-[#9F70FD]' : 'text-[#00F5D4]'}`} />
-            <span>{workshop.capacity} seats {isPast ? 'were' : 'are'} available | Instructor: {workshop.instructor}</span>
-          </div>
+
         </div>
         
         {isPast ? (
