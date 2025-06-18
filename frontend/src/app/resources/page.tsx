@@ -403,22 +403,14 @@ const Resources = () => {
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <motion.button
-                className="px-8 py-3 bg-gradient-to-r from-[#9F70FD] to-[#7a4be6] text-white rounded-full font-bold"
+                className="px-8 py-3 bg-gradient-to-r from-[#0D0D0D] to-[#0D0D2D] text-[#9F70FD] rounded-full font-bold"
                 whileHover={{ scale: 1.05, boxShadow: "0 0 30px #9F70FD" }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => window.open("https://docs.google.com/forms/d/1TpRhNPhQGNSSjlbgx7pmNWeqHzL2Sech7tt1Oq4uSpk/preview", "_blank")}
-              >
-                Book Lab Assistance
-              </motion.button>
-              <motion.button
-                className="px-8 py-3 border border-[#9F70FD] text-[#9F70FD] rounded-full font-bold"
-                whileHover={{ scale: 1.05, backgroundColor: "#9F70FD", color: "#0D0D0D" }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => window.open("https://docs.google.com/forms/d/1TpRhNPhQGNSSjlbgx7pmNWeqHzL2Sech7tt1Oq4uSpk/preview", "_blank")}
-
+                onClick={() => window.open("https://forms.gle/NwAu4stDChX6Qvmm7", "_blank")}
               >
                 Component Request Form
               </motion.button>
+
             </div>
           </div>
         </motion.section>

@@ -104,9 +104,9 @@ export default function Home() {
     },
     {
       id: 3,
-      name: "Michael Chen",
-      role: "Senior Developer",
-      content: "As an alumni, I still collaborate with the lab on projects. The facilities and expert guidance continue to inspire innovation.",
+      name: "Sukanya Pingle",
+      role: "Operations Head (2024-25)",
+      content: "Serving as Operations Head of the Tinkerers' Lab ECS Council was an enriching experience, where I organized technical workshops on IoT, Arduino, and core electronics, and helped lead Tinkerthon—a hands-on hackathon tackling real-world challenges.",
       avatar: "/avatar3.jpg"
     }
   ];
@@ -302,7 +302,7 @@ export default function Home() {
         >
           <h2 className="text-3xl font-bold font-mono text-center mb-12 text-transparent bg-clip-text bg-gradient-to-r from-[#9F70FD] to-[#00F5D4]">What Our Members Say</h2>
           
-          <div className="max-w-4xl mx-auto relative">
+          <div className="max-w-5xl mx-auto relative">
             {/* Navigation Arrows */}
             <button 
               onClick={() => setActiveTestimonial((prev) => (prev === 0 ? testimonials.length - 1 : prev - 1))}
@@ -324,7 +324,7 @@ export default function Home() {
               </svg>
             </button>
 
-            <div className="relative h-80">
+            <div className="relative h-100">
               {testimonials.map((testimonial, index) => (
                 <motion.div
                   key={testimonial.id}

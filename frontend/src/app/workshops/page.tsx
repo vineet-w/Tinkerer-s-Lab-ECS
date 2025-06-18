@@ -267,7 +267,7 @@ const Workshops = () => {
                 className="px-8 py-3 bg-gradient-to-r from-[#9F70FD] to-[#7a4be6] text-white rounded-full font-bold"
                 whileHover={{ scale: 1.05, boxShadow: "0 0 30px #9F70FD" }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => window.open("https://docs.google.com/forms/d/1TpRhNPhQGNSSjlbgx7pmNWeqHzL2Sech7tt1Oq4uSpk/preview", "_blank")}
+                onClick={() => window.open("https://forms.gle/JTJHw5q1D2pcYcuh6", "_blank")}
 
               >
                 Propose a Workshop
