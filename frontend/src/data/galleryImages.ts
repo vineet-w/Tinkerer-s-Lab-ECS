@@ -1,0 +1,1 @@
+export const galleryImages = Array(12).fill(0).map((_, i) => `/events/event${i % 4 + 1}.jpg`);

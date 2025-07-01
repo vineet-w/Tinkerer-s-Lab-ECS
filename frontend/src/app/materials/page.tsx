@@ -4,17 +4,16 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { FiCpu, FiCode, FiBookOpen, FiAward, FiMessageSquare, FiDownload, FiExternalLink, FiTool, FiSearch, FiGithub, FiInstagram, FiLinkedin, FiTwitter, FiX } from 'react-icons/fi';
+import Header from "@/components/Header";
+import BackgroundGrid from "@/components/BackgroundGrid";
+import MouseTrailer from "@/components/MouseTrailer";
+import Footer from "@/components/Footer";
 
 const Materials = () => {
   const [isHovering, setIsHovering] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
-
-
-
-
-
-  // Original Materials Page Content (only shown when verified)
     const sections = [
       { 
         title: "Workshops", 
@@ -205,41 +204,16 @@ const Materials = () => {
   return (
     <div className="min-h-screen flex flex-col bg-[#0D0D0D] text-gray-300 font-sans overflow-hidden relative">
       {/* Background Grid */}
-      <div className="absolute inset-0 z-0 opacity-20" style={{ backgroundImage: 'linear-gradient(#9F70FD 1px, transparent 1px), linear-gradient(to right, #9F70FD 1px, transparent 1px)', backgroundSize: '3rem 3rem' }} />
-
+      <BackgroundGrid/>
+        <MouseTrailer mousePosition={mousePosition} isHovering={isHovering} />
       {/* Header */}
-      <header className="py-6 px-8 sm:px-20 relative z-10 backdrop-blur-md bg-[#0D0D0D]/30">
-        <div className="flex justify-between items-center">
+       <Header 
+         sections={sections} 
+         isHovering={isHovering} 
+         setIsHovering={setIsHovering} 
+       />
 
-
-        <Link href="/" className="flex items-center gap-3 cursor-pointer">
-          <Image 
-            src="/icons/tinku.jpg" 
-            alt="Logo" 
-            width={48} 
-            height={48} 
-            className="rounded-full border-2 border-[#9F70FD]/50" 
-          />
-          <span className="text-xl font-mono font-bold text-white">Tinkerer's Lab ECS</span>
-        </Link>
-
-          <nav className="hidden md:flex gap-6 font-mono">
-            <Link href="/">
-              <span className="text-gray-300 hover:text-[#00F5D4] transition-colors">Home</span>
-            </Link>
-            {sections.slice(0, 4).map((section) => (
-              <Link key={section.title} href={section.href}>
-                <motion.div className="text-gray-300 hover:text-[#00F5D4] transition-colors relative" onHoverStart={() => setIsHovering(section.title)} onHoverEnd={() => setIsHovering(null)} whileHover={{ scale: 1.1 }}>
-                  {section.title}
-                  <motion.div className="absolute -bottom-1 left-0 w-full h-0.5 bg-[#00F5D4]" initial={{ scaleX: 0 }} animate={{ scaleX: isHovering === section.title ? 1 : 0 }} style={{ transformOrigin: 'left' }} transition={{ duration: 0.3 }} />
-                </motion.div>
-              </Link>
-            ))}
-          </nav>
-        </div>
-      </header>
-
-      <main className="flex-1 px-8 sm:px-20 py-12 flex flex-col relative z-10">
+      <main className="flex-1 px-8 pt-24 sm:px-20 py-12 flex flex-col relative z-10">
         {/* Hero Section */}
         <motion.section 
           className="mb-16 text-center"
@@ -251,13 +225,13 @@ const Materials = () => {
             className="inline-block bg-[#9F70FD]/20 border border-[#9F70FD]/50 rounded-full px-4 py-2 text-sm font-mono text-[#00F5D4] mb-6"
             whileHover={{ scale: 1.05, y: -5, boxShadow: '0 0 20px #00F5D4' }}
           >
-            Exclusive ECS Resources
+            Exclusive Resources
           </motion.div>
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold font-mono mb-6 text-white">
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#9F70FD] to-[#00F5D4]">Study Materials</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#9F70FD] to-[#00F5D4]">Workshop Materials</span>
           </h1>
           <p className="text-xl text-gray-400 mb-10 max-w-3xl mx-auto">
-            Comprehensive collection of textbooks, guides, and reference materials exclusively for ECS students. 
+            Comprehensive collection of guides, and reference materials exclusively for students. 
             Filter by category or search for specific topics.
           </p>
           
@@ -415,117 +389,7 @@ const Materials = () => {
       </main>
 
       {/* Footer */}
-      <footer className="py-12 px-8 sm:px-20 border-t border-[#9F70FD]/20 relative z-10 backdrop-blur-md bg-[#0D0D0D]/30">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-            {/* Logo and Social Links */}
-            <div>
-              <div className="flex items-center gap-3 mb-4">
-                <div className="relative w-10 h-10">
-                  <Image
-                    src="/icons/tinku.jpg"
-                    alt="Tinkerer's Lab ECS Logo"
-                    width={40}
-                    height={40}
-                    className="object-contain rounded-lg border border-[#9F70FD]/30"
-                  />
-                </div>
-                <span className="font-bold text-white font-mono">Tinkerer's Lab ECS</span>
-              </div>
-              <p className="text-gray-400 mb-4 font-mono">
-                Fostering innovation and creativity through hands-on learning and collaboration.
-              </p>
-              <div className="flex space-x-4">
-                {[
-                  { icon: <FiTwitter className="h-5 w-5" />, color: "hover:text-[#1DA1F2]" },
-                  { icon: <FiGithub className="h-5 w-5" />, color: "hover:text-gray-300" },
-                  { icon: <FiLinkedin className="h-5 w-5" />, color: "hover:text-[#0077B5]" },
-                  { icon: <FiInstagram className="h-5 w-5" />, color: "hover:text-[#E1306C]" }
-                ].map((social, i) => (
-                  <motion.a 
-                    key={i}
-                    href="#"
-                    className={`text-gray-400 ${social.color} transition-colors`}
-                    whileHover={{ y: -5 }}
-                  >
-                    <div className="w-10 h-10 rounded-full bg-[#1A1A1A] flex items-center justify-center border border-[#9F70FD]/30">
-                      {social.icon}
-                    </div>
-                  </motion.a>
-                ))}
-              </div>
-            </div>
-            
-            {/* Quick Links */}
-            <div>
-              <h3 className="text-lg font-bold text-white mb-4 font-mono">Quick Links</h3>
-              <ul className="space-y-2">
-                {sections.map((section) => (
-                  <li key={section.title}>
-                    <Link href={section.href}>
-                      <motion.div 
-                        className="text-gray-400 hover:text-[#00F5D4] transition-colors font-mono"
-                        whileHover={{ x: 5 }}
-                      >
-                        {section.title}
-                      </motion.div>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            
-            {/* VESIT Information */}
-            <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6">
-              <div className="flex-shrink-0">
-                <Image
-                  src="/icons/vesit.png"
-                  alt="VESIT Logo"
-                  width={100}
-                  height={20}
-                  className="object-contain rounded-lg border border-[#9F70FD]/30"
-                />
-              </div>
-              
-              <div>
-                <h4 className="text-white font-bold text-center md:text-left font-mono">
-                  Vivekanand Education Society's Institute Of Technology
-                </h4>
-                <p className="text-gray-400 text-sm mt-1 text-center md:text-left font-mono">
-                  Hashu Adwani Memorial Complex, Collector's Colony, Chembur, Mumbai, Maharashtra, 400074
-                </p>
-              </div>
-            </div>
-          </div>
-          
-          {/* Copyright */}
-          <div className="border-t border-[#9F70FD]/20 pt-6 flex flex-col md:flex-row justify-between items-center">
-            <p className="text-gray-500 text-sm font-mono">
-              &copy; {new Date().getFullYear()} Tinkerer's Lab ECS. All rights reserved.
-            </p>
-            <p className="text-gray-500 text-sm mt-4 md:mt-0 font-mono">
-              Built with ❤️ by the Dreamers for Dreamers.
-            </p>
-          </div>
-        </div>
-        
-        {/* Floating animated elements */}
-        <motion.div
-          className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-[#9F70FD] via-[#7a4be6] to-[#00F5D4]"
-          animate={{
-            backgroundPosition: ['0% 50%', '100% 50%'],
-          }}
-          transition={{
-            duration: 5,
-            repeat: Infinity,
-            repeatType: "reverse",
-            ease: "linear"
-          }}
-          style={{
-            backgroundSize: '200% 200%'
-          }}
-        />
-      </footer>
+    <Footer sections={sections} />
     </div>
   );
 };
