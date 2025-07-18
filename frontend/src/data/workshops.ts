@@ -11,6 +11,56 @@ export interface Workshop {
 
 export const workshops: Workshop[] = [
   {
+    id: 11,
+    title: "Tinkerthon",
+    description: "A rapid prototyping hackathon where teams build, test, and showcase innovative tech solutions.",
+    date: "2025-04-16",
+    time: "1:00 PM - 4:00 PM",
+    location: "Lab B22, Second Floor",
+    image: "/workshops/tinkerthon.jpg",
+    tags: ["Hackathon", "Maker", "All Levels"]
+  },
+  {
+    id: 10,
+    title: "Nex-IoT",
+    description: "Step into the future with advanced IoT concepts and real-world smart device integration.",
+    date: "2024-03-19",
+    time: "2:30 PM - 5:00 PM",
+    location: "B62, 2nd Floor",
+    image: "/workshops/nexiot.jpg",
+    tags: ["IoT", "Advanced"]
+  },
+  {
+    id: 9,
+    title: "IoT Workshop",
+    description: "Explore the Internet of Things by connecting sensors and devices to the cloud.",
+    date: "2024-09-25",
+    time: "3:30 PM - 5:00 PM",
+    location: "B52, 2nd Floor",
+    image: "/workshops/iot2.jpg",
+    tags: ["IoT", "Electronics", "Intermediate"]
+  },
+  {
+    id: 8,
+    title: "Arduino Workshop",
+    description: "Learn to program Arduino boards and create interactive electronic projects from scratch.",
+    date: "2024-09-19",
+    time: "1:00 PM - 5:00 PM",
+    location: "B21, 2nd Floor",
+    image: "/workshops/arduino.jpg",
+    tags: ["Electronics", "Arduino", "Beginner"]
+  },
+  {
+    id: 7,
+    title: "Electronics workshop'24",
+    description: "Dive into the fundamentals of electronics with hands-on circuit building and real-world applications.",
+    date: "2024-08-08",
+    time: "3:00 PM - 5:00 PM",
+    location: "B21, 2nd Floor",
+    image: "/workshops/electronics.jpg",
+    tags: ["Electronics", "Beginner"]
+  },
+  {
     id: 1,
     title: "Praxis ‘24: Robotics Event",
     description: "Praxis’ 24 showcased cutting-edge robotics through four dynamic challenges, from Robo Soccer to autonomous maze-solving. The event celebrated innovation, with Tinkerer’s Lab ECS honoring top performers for their skill and creativity.",

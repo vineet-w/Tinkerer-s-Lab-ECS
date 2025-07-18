@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { FiCalendar, FiClock, FiMapPin, FiCheckCircle, FiArrowRight } from 'react-icons/fi';
+import { useState } from "react";
 
 type Workshop = {
   id: number;
@@ -19,13 +20,18 @@ type WorkshopCardProps = {
 };
 
 export default function WorkshopCard({ workshop, isPast }: WorkshopCardProps) {
+  const [showPopup, setShowPopup] = useState(false);
   return (
     <motion.div
       className={`group relative bg-[#1A1A1A]/50 backdrop-blur-lg rounded-2xl border overflow-hidden ${isPast ? 'border-[#9F70FD]/10' : 'border-[#9F70FD]/30'}`}
       whileHover={{ y: -10, boxShadow: '0 0 30px rgba(159, 112, 253, 0.3)' }}
       transition={{ type: "spring", stiffness: 300 }}
     >
-      <div className="relative h-48 w-full overflow-hidden">
+      <div
+        className="relative h-48 w-full overflow-hidden"
+        onMouseEnter={() => setShowPopup(true)}
+        onMouseLeave={() => setShowPopup(false)}
+      >
         <Image
           src={workshop.image}
           alt={workshop.title}
@@ -36,6 +42,16 @@ export default function WorkshopCard({ workshop, isPast }: WorkshopCardProps) {
         {isPast && (
           <div className="absolute top-4 right-4 bg-[#9F70FD]/80 text-white px-3 py-1 rounded-full text-xs font-mono flex items-center">
             <FiCheckCircle className="mr-1" /> Completed
+          </div>
+        )}
+        {showPopup && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70" style={{ cursor: 'zoom-out' }} onClick={() => setShowPopup(false)}>
+            <img
+              src={workshop.image}
+              alt={workshop.title}
+              className="w-auto h-auto max-w-full max-h-full rounded-lg shadow-2xl border-4 border-white"
+              style={{ objectFit: 'contain' }}
+            />
           </div>
         )}
       </div>
