@@ -38,13 +38,13 @@ export const sections: Section[] = [
     description: "Get to know us",
     color: "from-green-500 to-emerald-500"
   },
-  { 
-    title: "Projects", 
-    href: "/projects", 
-    icon: <FiAward size={28} />,
-    description: "Innovative creations from our community",
-    color: "from-yellow-500 to-orange-500"
-  },
+  // { 
+  //   title: "Projects", 
+  //   href: "/projects", 
+  //   icon: <FiAward size={28} />,
+  //   description: "Innovative creations from our community",
+  //   color: "from-yellow-500 to-orange-500"
+  // },
   { 
     title: "Competitions", 
     href: "/competitions", 
