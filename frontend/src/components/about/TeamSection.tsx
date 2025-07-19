@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { FacultyMember } from "@/data/faculty";
 import { StudentMember } from "@/data/studentTeam";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 
 // Removed Next.js Image import to prevent compilation issues in this environment
 // import Image from "next/image"; 
@@ -20,67 +20,67 @@ export default function TeamSection({ faculty = [], studentTeam = [] }: TeamSect
   const currentTeam = activeTeam === "BE" ? beTeam : teTeam;
 
   // Animation variants for the container of team members
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.08, // Stagger children animations by 0.08 seconds
-        delayChildren: 0.1,    // Delay start of children animations by 0.1 seconds
-      }
-    },
-    exit: {
-      opacity: 0,
-      transition: {
-        duration: 0.3 // Fade out the container quickly on exit
-      }
+const container: Variants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.1
     }
-  };
+  },
+  exit: {
+    opacity: 0,
+    transition: { duration: 0.3 }
+  }
+};
 
   // Animation variants for individual team member cards (the flip effect)
-  const item = {
-    hidden: { rotateY: 90, opacity: 0, scale: 0.9 }, // Start rotated 90 degrees on Y-axis, invisible, slightly smaller
-    show: {
-      rotateY: 0, // Rotate to 0 degrees (front-facing)
-      opacity: 1, // Become fully visible
-      scale: 1,   // Return to original size
-      transition: {
-        type: "spring",   // Use a spring animation for a natural bounce
-        damping: 15,      // Controls how quickly the spring comes to rest
-        stiffness: 200    // Controls the stiffness of the spring
-      }
-    },
-    exit: {
-      rotateY: -90, // Rotate -90 degrees on Y-axis (flip out in opposite direction)
-      opacity: 0,   // Fade out
-      scale: 0.9,   // Shrink slightly
-      transition: { duration: 0.2 } // Quick exit transition
+const item: Variants = {
+  hidden: { rotateY: 90, opacity: 0, scale: 0.9 },
+  show: {
+    rotateY: 0,
+    opacity: 1,
+    scale: 1,
+    transition: {
+      type: "spring" as "spring", // ✅ fix here
+      damping: 15,
+      stiffness: 200
     }
-  };
+  },
+  exit: {
+    rotateY: -90,
+    opacity: 0,
+    scale: 0.9,
+    transition: { duration: 0.2 }
+  }
+};
+
 
   // Variants for the team selection tabs
-  const tabVariants = {
-    inactive: {
-      scale: 1,
-      background: "transparent",
-      color: "#D1D5DB"
-    },
-    active: {
-      scale: 1.05,
-      background: "linear-gradient(90deg, #9F70FD, #00F5D4)",
-      color: "#0D0D0D",
-      transition: {
-        type: "spring",
-        stiffness: 300,
-        damping: 15
-      }
-    },
-    hover: {
-      scale: 1.03,
-      color: "#FFFFFF",
-      transition: { duration: 0.2 }
+const tabVariants: Variants = {
+  inactive: {
+    scale: 1,
+    background: "transparent",
+    color: "#D1D5DB"
+  },
+  active: {
+    scale: 1.05,
+    background: "linear-gradient(90deg, #9F70FD, #00F5D4)",
+    color: "#0D0D0D",
+    transition: {
+      type: "spring" as "spring", // ✅ explicitly cast
+      stiffness: 300,
+      damping: 15
     }
-  };
+  },
+  hover: {
+    scale: 1.03,
+    color: "#FFFFFF",
+    transition: { duration: 0.2 }
+  }
+};
+
 
   return (
     <motion.section
