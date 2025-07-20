@@ -25,15 +25,19 @@ export default function Header({ sections, isHovering, setIsHovering }: HeaderPr
   const router = useRouter();
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-
-  const handleLogout = async () => {
-    try {
-      const destination = await logout();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+const handleLogout = async () => {
+  try {
+    setIsLoggingOut(true); // Show overlay animation
+    const destination = await logout();
+    setTimeout(() => {
       router.push(destination);
-    } catch (error) {
-      console.error("Failed to log out", error);
-    }
-  };
+    }, 1000); // Small delay to let the animation play
+  } catch (error) {
+    console.error("Failed to log out", error);
+    setIsLoggingOut(false);
+  }
+};
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -154,6 +158,33 @@ const getInitials = (user: any) => {
           </div>
         </nav>
       </div>
+      <AnimatePresence>
+  {isLoggingOut && (
+    <motion.div
+      className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-black/80 backdrop-blur-md text-white"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
+      {/* Spinner */}
+      <motion.div
+        animate={{ rotate: 360 }}
+        transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+        className="w-12 h-12 border-4 border-t-transparent border-[#00F5D4] rounded-full mb-4"
+      />
+      {/* Message */}
+      <motion.p
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="text-lg font-mono"
+      >
+        Logging you out...
+      </motion.p>
+    </motion.div>
+  )}
+</AnimatePresence>
+
     </header>
   );
 }

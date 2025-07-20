@@ -63,7 +63,7 @@ export default function Home() {
 
       <main className="flex-1 px-8 sm:px-20 flex flex-col relative z-10">
         <HeroSection />
-        <NewsTicker newsItems={newsItems} />
+        <NewsTicker/>
         <SectionsGrid sections={sections} />
         <Testimonials testimonials={testimonials} />
         <Gallery />

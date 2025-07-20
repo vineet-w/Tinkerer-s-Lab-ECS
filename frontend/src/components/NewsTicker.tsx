@@ -1,12 +1,32 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { db } from "../../firebase"; // adjust the path if needed
+import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
 
-type NewsTickerProps = {
-  newsItems: string[];
-};
+const NewsTicker: React.FC = () => {
+  const [newsItems, setNewsItems] = useState<string[]>([]);
 
-export default function NewsTicker({ newsItems }: NewsTickerProps) {
+  useEffect(() => {
+    const q = query(collection(db, "news"), orderBy("createdAt", "desc"));
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const latestNews: string[] = snapshot.docs.map(
+        (doc) => doc.data().title as string
+      );
+      setNewsItems(latestNews);
+    });
+
+    return () => unsubscribe(); // Cleanup listener
+  }, []);
+
+  if (newsItems.length === 0) {
+    return null; // Hide ticker if no news
+  }
+
   return (
-    <motion.section 
+    <motion.section
       className="mb-24"
       initial={{ opacity: 0, y: 50 }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -14,7 +34,7 @@ export default function NewsTicker({ newsItems }: NewsTickerProps) {
       viewport={{ once: true, margin: "-100px" }}
     >
       <div className="relative overflow-hidden py-4 bg-[#1A1A1A]/50 rounded-lg border border-[#9F70FD]/30">
-        <motion.div 
+        <motion.div
           className="flex whitespace-nowrap items-center"
           animate={{ x: ["0%", "-100%"] }}
           transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
@@ -33,4 +53,6 @@ export default function NewsTicker({ newsItems }: NewsTickerProps) {
       </div>
     </motion.section>
   );
-}
+};
+
+export default NewsTicker;
