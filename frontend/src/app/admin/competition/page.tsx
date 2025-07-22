@@ -30,7 +30,8 @@ interface ResponseData {
   email: string;
   score: number;
   timeTaken: number;
-  submittedAt: string;
+  submittedAt: string; // For display
+  timestamp: number;   // For sorting (milliseconds)
 }
 
 interface QuizWithResponses {
@@ -218,26 +219,33 @@ const exportQuizAsJson = (quiz: QuizWithResponses) => {
             status: d.status ?? "inactive",
             responses: [],
           };
-
-          const responsesQuery = query(
-            collection(db, `quizzes/${quizDoc.id}/responses`),
-            orderBy("score", "desc")
-          );
-          
-          const responsesSnap = await getDocs(responsesQuery);
-          const responses: ResponseData[] = responsesSnap.docs.map((res) => {
-            const r = res.data();
-            return {
-              id: res.id,
-              name: r.name || "Anonymous",
-              email: r.email || "",
-              score: r.score || 0,
-              timeTaken: r.timeTaken || 0,
-              submittedAt: r.submittedAt?.toDate
-                ? r.submittedAt.toDate().toLocaleString()
-                : "Unknown",
-            };
-          });
+const responsesCollection = collection(db, `quizzes/${quizDoc.id}/responses`);
+const responsesSnap = await getDocs(responsesCollection);
+let responses: ResponseData[] = responsesSnap.docs.map((res) => {
+  const r = res.data();
+  const submittedAt = r.submittedAt?.toDate ? r.submittedAt.toDate() : null;
+  
+  return {
+    id: res.id,
+    name: r.name || "Anonymous",
+    email: r.email || "",
+    score: r.score || 0,
+    timeTaken: r.timeTaken || 0,
+    submittedAt: submittedAt ? submittedAt.toLocaleString() : "Unknown",
+    timestamp: submittedAt ? submittedAt.getTime() : 0
+  };
+});
+// Client-side sorting
+responses.sort((a, b) => {
+  // Score (descending)
+  if (b.score !== a.score) return b.score - a.score;
+  
+  // Time taken (ascending)
+  if (a.timeTaken !== b.timeTaken) return a.timeTaken - b.timeTaken;
+  
+  // Submission time (ascending)
+  return a.timestamp - b.timestamp;
+});     
 
           quizData.responses = responses;
           quizzesWithResponses.push(quizData);
