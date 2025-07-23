@@ -10,7 +10,8 @@ import { sections } from "@/data/sections";
 import { useAuth } from "../../context/AuthContext";
 import { db } from "../../../firebase";
 import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
-
+import { setDoc, doc } from "firebase/firestore";
+import { getDoc } from "firebase/firestore";
 // ✅ Types
 interface Question {
   questionText: string;
@@ -37,14 +38,22 @@ export default function Competition() {
   const { currentUser } = useAuth();
   const [startTime, setStartTime] = useState<number | null>(null);
   const [submittedQuizzes, setSubmittedQuizzes] = useState<string[]>([]);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [statusPopup, setStatusPopup] = useState<{ visible: boolean; message: string }>({
     visible: false,
     message: "",
   });
-
+const [resultPopup, setResultPopup] = useState<{
+  visible: boolean;
+  title: string;
+  message: string;
+}>({ visible: false, title: "", message: "" });
   const handleSelect = (qIndex: number, option: string) => {
     setAnswers((prev) => ({ ...prev, [qIndex]: option }));
   };
+
+  const [cheatCount, setCheatCount] = useState(0);
+const [cheatWarning, setCheatWarning] = useState<string | null>(null);
 
   // ✅ Fetch all quizzes
   const fetchQuizzes = async (): Promise<Quiz[]> => {
@@ -60,23 +69,21 @@ export default function Competition() {
     });
   };
 
-  // ✅ Optimized: Fetch all submissions for the current user in one go
-  const fetchUserSubmissions = async (quizList: Quiz[]) => {
-    if (!currentUser) return;
+ 
+const fetchUserSubmissions = async (quizList: Quiz[]) => {
+  if (!currentUser) return;
 
-    const submittedIds: string[] = [];
+ const submittedIds = await Promise.all(
+  quizList.map(async (quiz) => {
+    const ref = doc(db, `quizzes/${quiz.id}/responses`, currentUser.email);
+    const snap = await getDoc(ref);
+    return snap.exists() ? quiz.id : null;
+  })
+);
 
-    // Instead of N×M, just check each quiz once
-    for (const quiz of quizList) {
-      const qSnapshot = await getDocs(collection(db, `quizzes/${quiz.id}/responses`));
-      const userSubmitted = qSnapshot.docs.some(
-        (doc) => doc.data().email === currentUser.email
-      );
-      if (userSubmitted) submittedIds.push(quiz.id);
-    }
+setSubmittedQuizzes(submittedIds.filter(Boolean) as string[]);
 
-    setSubmittedQuizzes(submittedIds);
-  };
+};
 
   // ✅ Fetch quizzes + user submissions
   const initData = async () => {
@@ -109,13 +116,16 @@ export default function Competition() {
     }
   };
 
-  const handleSubmitQuiz = async () => {
-    if (!selectedQuiz || !currentUser) return;
 
-    const endTime = Date.now();
-    const timeTaken = startTime ? (endTime - startTime) / 1000 : 0; 
+const handleSubmitQuiz = async (cheated: boolean = false) => {
+  if (!selectedQuiz || !currentUser) return;
 
-    let score = 0;
+  const endTime = Date.now();
+  const timeTaken = startTime ? (endTime - startTime) / 1000 : 0;
+
+  let score = 0;
+
+  if (!cheated) {
     selectedQuiz.questions.forEach((q, idx) => {
       if (q.questionType === "mcq" && q.correctAnswerIndex != null) {
         const correctText = q.options?.[q.correctAnswerIndex].text;
@@ -129,30 +139,71 @@ export default function Competition() {
         }
       }
     });
+  } else {
+    // If cheated, force zero score
+    score = 0;
+  }
 
-    const responseData = {
-      name: currentUser.displayName || "Anonymous",
-      email: currentUser.email,
-      answers,
-      score,
-      submittedAt: new Date(),
-      timeTaken,
-    };
-
-    try {
-      await addDoc(
-        collection(db, `quizzes/${selectedQuiz.id}/responses`),
-        responseData
-      );
-
-      // ✅ Mark as submitted locally
-      setSubmittedQuizzes((prev) => [...prev, selectedQuiz.id]);
-      alert(`Quiz submitted! Your score: ${score}/${selectedQuiz.questions.length}`);
-      setSelectedQuiz(null);
-    } catch (error) {
-      console.error("Error saving quiz response:", error);
-    }
+  const responseData = {
+    name: currentUser.displayName || "Anonymous",
+    email: currentUser.email,
+    answers: cheated ? {} : answers, // Clear answers if cheated
+    score,
+    submittedAt: new Date(),
+    timeTaken,
+    cheated, // Save cheat flag in DB
   };
+
+  try {
+    const responseDocRef = doc(
+      db,
+      `quizzes/${selectedQuiz.id}/responses`,
+      currentUser.email
+    );
+
+    const existingSnap = await getDoc(responseDocRef);
+    if (existingSnap.exists()) {
+      setResultPopup({
+        visible: true,
+        title: "Already Submitted",
+        message: "You have already submitted this quiz earlier!",
+      });
+      return;
+    }
+
+    await setDoc(responseDocRef, responseData);
+
+    // Mark as submitted locally
+    setSubmittedQuizzes((prev) => [...prev, selectedQuiz.id]);
+    setSelectedQuiz(null);
+
+    // ✅ Show final modal
+    if (cheated) {
+      setResultPopup({
+        visible: true,
+        title: "Quiz Auto-Submitted ❌",
+        message: `Cheating detected! Your quiz has been submitted with 0 score.`,
+      });
+    } else {
+      setResultPopup({
+        visible: true,
+        title: "Quiz Submitted ✅",
+        message: `Your score: ${score}/${selectedQuiz.questions.length}\nTime taken: ${timeTaken.toFixed(
+          1
+        )}s`,
+      });
+    }
+  } catch (error) {
+    console.error("Error saving quiz response:", error);
+    setResultPopup({
+      visible: true,
+      title: "Error ❌",
+      message: "Something went wrong while submitting. Please try again.",
+    });
+  }
+};
+
+
 
   // ✅ Single useEffect: load quizzes + submissions on user change
   useEffect(() => {
@@ -168,12 +219,79 @@ export default function Competition() {
   }, [currentUser]);
 
   // ✅ Reset answers when quiz changes
-  useEffect(() => {
-    if (selectedQuiz) {
-      setAnswers({});
-      setStartTime(Date.now());
+useEffect(() => {
+  if (selectedQuiz) {
+    setAnswers({});
+    setStartTime(Date.now());
+    setCurrentQuestionIndex(0);  // Reset to first question
+  }
+}, [selectedQuiz]);
+
+useEffect(() => {
+  if (!selectedQuiz) return; // Only enable anti-cheat while quiz is open
+
+  const handleVisibility = () => {
+    if (document.hidden) {
+      setCheatWarning("You switched tabs! Please stay on this page.");
+      setCheatCount((c) => c + 1);
     }
-  }, [selectedQuiz]);
+  };
+
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (
+      (e.ctrlKey && e.key === "c") || // Copy
+      (e.ctrlKey && e.shiftKey && e.key === "I") || // Inspect
+      e.key === "F12" // Dev tools
+    ) {
+      e.preventDefault();
+      e.stopPropagation();
+      setCheatWarning("Keyboard shortcuts are disabled during the quiz!");
+      setCheatCount((c) => c + 1);
+    }
+  };
+
+  const handleContextMenu = (e: MouseEvent) => {
+    e.preventDefault();
+    setCheatWarning("Right-click is disabled during the quiz!");
+    setCheatCount((c) => c + 1);
+  };
+
+  const handleFullscreenChange = () => {
+    if (!document.fullscreenElement) {
+      setCheatWarning("You exited fullscreen mode. Please stay in fullscreen.");
+      setCheatCount((c) => c + 1);
+    }
+  };
+
+  // Attach events
+  document.addEventListener("visibilitychange", handleVisibility);
+  document.addEventListener("keydown", handleKeyDown);
+  document.addEventListener("contextmenu", handleContextMenu);
+  document.addEventListener("fullscreenchange", handleFullscreenChange);
+
+  // Force fullscreen when quiz starts
+  if (document.documentElement.requestFullscreen) {
+    document.documentElement.requestFullscreen();
+  }
+
+  return () => {
+    // Cleanup on exit
+    document.removeEventListener("visibilitychange", handleVisibility);
+    document.removeEventListener("keydown", handleKeyDown);
+    document.removeEventListener("contextmenu", handleContextMenu);
+    document.removeEventListener("fullscreenchange", handleFullscreenChange);
+
+    if (document.exitFullscreen) document.exitFullscreen();
+  };
+}, [selectedQuiz]);
+
+// Auto-submit if too many violations
+useEffect(() => {
+  if (cheatCount >= 1 && selectedQuiz) {
+    setCheatWarning("Too many violations! Your quiz will be auto-submitted with 0 score.");
+    setTimeout(() => handleSubmitQuiz(true), 2000); // Pass cheated=true
+  }
+}, [cheatCount]);
 
   return (
     <div className="min-h-screen pt-20 flex flex-col bg-[#0D0D0D] text-gray-300 font-sans overflow-hidden relative">
@@ -294,84 +412,146 @@ export default function Competition() {
       </main>
 
       {/* ✅ Quiz Modal */}
-      <AnimatePresence>
-        {selectedQuiz && (
-          <motion.div
-            className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+<AnimatePresence>
+  {selectedQuiz && (
+    <motion.div
+      className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
+      <motion.div
+        className="bg-[#1a1a1a] rounded-xl p-6 w-full max-w-3xl max-h-[80vh] relative"
+        initial={{ scale: 0.9, y: -20 }}
+        animate={{ scale: 1, y: 0 }}
+        exit={{ scale: 0.9, y: -20 }}
+      >
+        {/* Close Button */}
+        <button
+          className="absolute top-3 right-3 text-gray-400 hover:text-white"
+          onClick={() => setSelectedQuiz(null)}
+        >
+          ✕
+        </button>
+
+        <h2 className="text-2xl font-bold text-white mb-4">
+          {selectedQuiz.name}
+        </h2>
+
+        {/* Show only ONE question */}
+        {(() => {
+          const q = selectedQuiz.questions[currentQuestionIndex];
+          const idx = currentQuestionIndex;
+          return (
+            <div className="mb-4 p-4 border border-gray-700 rounded-lg bg-[#222]">
+              <p className="font-semibold mb-2">
+                Q{idx + 1}/{selectedQuiz.questions.length}: {q.questionText}
+              </p>
+
+              {q.questionType === "mcq" && q.options && (
+                <ul className="space-y-2">
+                  {q.options.map((opt, optIdx) => {
+                    const selected = answers[idx] === opt.text;
+                    return (
+                      <li
+                        key={optIdx}
+                        onClick={() => handleSelect(idx, opt.text)}
+                        className={`p-2 rounded cursor-pointer transition ${
+                          selected
+                            ? "bg-[#9F70FD] text-white"
+                            : "bg-[#333] hover:bg-[#444]"
+                        }`}
+                      >
+                        {opt.text}
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+
+              {q.questionType === "short" && (
+                <input
+                  type="text"
+                  className="w-full p-2 rounded bg-[#333] text-white"
+                  placeholder="Your answer"
+                  value={answers[idx] || ""}
+                  onChange={(e) => handleSelect(idx, e.target.value)}
+                />
+              )}
+            </div>
+          );
+        })()}
+
+        {/* Navigation Buttons */}
+        <div className="flex justify-between mt-4">
+          {/* Prev Button */}
+          <button
+            onClick={() => setCurrentQuestionIndex((prev) => Math.max(prev - 1, 0))}
+            disabled={currentQuestionIndex === 0}
+            className={`px-4 py-2 rounded-lg font-bold ${
+              currentQuestionIndex === 0
+                ? "bg-gray-600 text-gray-400 cursor-not-allowed"
+                : "bg-gradient-to-r from-[#9F70FD] to-[#00F5D4] text-black hover:opacity-90"
+            }`}
           >
-            <motion.div
-              className="bg-[#1a1a1a] rounded-xl p-6 w-full max-w-3xl max-h-[80vh] overflow-y-auto relative"
-              initial={{ scale: 0.9, y: -20 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.9, y: -20 }}
+            Previous
+          </button>
+
+          {/* Next or Submit */}
+          {currentQuestionIndex < selectedQuiz.questions.length - 1 ? (
+            <button
+              onClick={() =>
+                setCurrentQuestionIndex((prev) =>
+                  Math.min(prev + 1, selectedQuiz.questions.length - 1)
+                )
+              }
+              className="px-4 py-2 rounded-lg bg-gradient-to-r from-[#9F70FD] to-[#00F5D4] text-black font-bold hover:opacity-90"
             >
-              {/* Close */}
-              <button
-                className="absolute top-3 right-3 text-gray-400 hover:text-white"
-                onClick={() => setSelectedQuiz(null)}
-              >
-                ✕
-              </button>
+              Next
+            </button>
+          ) : (
+            <button
+              onClick={() => handleSubmitQuiz()}
+              className="px-4 py-2 rounded-lg bg-green-500 text-black font-bold hover:opacity-90"
+            >
+              Submit Quiz
+            </button>
+          )}
+        </div>
+      </motion.div>
+    </motion.div>
+  )}
+</AnimatePresence>
 
-              <h2 className="text-2xl font-bold text-white mb-4">
-                {selectedQuiz.name}
-              </h2>
-
-              {selectedQuiz.questions.map((q, idx) => (
-                <div
-                  key={idx}
-                  className="mb-4 p-4 border border-gray-700 rounded-lg bg-[#222]"
-                >
-                  <p className="font-semibold mb-2">
-                    Q{idx + 1}: {q.questionText}
-                  </p>
-
-                  {q.questionType === "mcq" && q.options && (
-                    <ul className="space-y-2">
-                      {q.options.map((opt, optIdx) => {
-                        const selected = answers[idx] === opt.text;
-                        return (
-                          <li
-                            key={optIdx}
-                            onClick={() => handleSelect(idx, opt.text)}
-                            className={`p-2 rounded cursor-pointer transition ${
-                              selected
-                                ? "bg-[#9F70FD] text-white"
-                                : "bg-[#333] hover:bg-[#444]"
-                            }`}
-                          >
-                            {opt.text}
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  )}
-
-                  {q.questionType === "short" && (
-                    <input
-                      type="text"
-                      className="w-full p-2 rounded bg-[#333] text-white"
-                      placeholder="Your answer"
-                      value={answers[idx] || ""}
-                      onChange={(e) => handleSelect(idx, e.target.value)}
-                    />
-                  )}
-                </div>
-              ))}
-
-              <button
-                className="mt-6 w-full py-2 rounded-lg bg-gradient-to-r from-[#9F70FD] to-[#00F5D4] text-black font-bold hover:opacity-90 transition"
-                onClick={handleSubmitQuiz}
-              >
-                Submit Quiz
-              </button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+<AnimatePresence>
+  {cheatWarning && (
+    <motion.div
+      className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
+      <motion.div
+        className="bg-red-900 rounded-xl p-6 w-full max-w-md text-center shadow-xl border border-red-500"
+        initial={{ scale: 0.9 }}
+        animate={{ scale: 1 }}
+        exit={{ scale: 0.9 }}
+      >
+        <h2 className="text-2xl font-bold text-white mb-3">⚠️ Cheating Detected</h2>
+        <p className="text-gray-200 mb-4">{cheatWarning}</p>
+        <p className="text-sm text-red-300 mb-4">
+          Warning your quiz will auto-submit.
+        </p>
+        <button
+          className="mt-2 w-full py-2 rounded-lg bg-gradient-to-r from-red-500 to-yellow-500 text-black font-bold hover:opacity-90 transition"
+          onClick={() => setCheatWarning(null)}
+        >
+          OK
+        </button>
+      </motion.div>
+    </motion.div>
+  )}
+</AnimatePresence>
 
       {/* Status Popup */}
       <AnimatePresence>
@@ -404,6 +584,33 @@ export default function Competition() {
           </motion.div>
         )}
       </AnimatePresence>
+{/* ✅ Result / Success Popup */}
+<AnimatePresence>
+  {resultPopup.visible && (
+    <motion.div
+      className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
+      <motion.div
+        className="bg-[#1a1a1a] rounded-xl p-8 w-full max-w-md text-center shadow-xl"
+        initial={{ scale: 0.9, y: -20 }}
+        animate={{ scale: 1, y: 0 }}
+        exit={{ scale: 0.9, y: -20 }}
+      >
+        <h2 className="text-2xl font-bold text-white mb-4">{resultPopup.title}</h2>
+        <p className="mb-6 text-gray-300 whitespace-pre-line">{resultPopup.message}</p>
+        <button
+          className="mt-4 w-full py-2 rounded-lg bg-gradient-to-r from-[#9F70FD] to-[#00F5D4] text-black font-bold hover:opacity-90 transition"
+          onClick={() => setResultPopup({ visible: false, title: "", message: "" })}
+        >
+          OK
+        </button>
+      </motion.div>
+    </motion.div>
+  )}
+</AnimatePresence>
 
       <Footer sections={sections} />
     </div>
