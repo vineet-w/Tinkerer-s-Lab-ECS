@@ -240,11 +240,12 @@ responses.sort((a, b) => {
   // Score (descending)
   if (b.score !== a.score) return b.score - a.score;
   
-  // Time taken (ascending)
-  if (a.timeTaken !== b.timeTaken) return a.timeTaken - b.timeTaken;
+  // // Time taken (ascending)
+  // if (a.timeTaken !== b.timeTaken) 
+  return a.timeTaken - b.timeTaken;
   
-  // Submission time (ascending)
-  return a.timestamp - b.timestamp;
+  // // Submission time (ascending)
+  // return a.timestamp - b.timestamp;
 });     
 
           quizData.responses = responses;
